@@ -1,0 +1,10 @@
+This is the first repo I have forked that I am trying to edit
+The way I made this was to first create a new folder on my local desktop and then git init to the correct
+http address of the forked repository (repo). [D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[A[A[B[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C and git remote[2~
+to[2~ the correct http address of the forked repository. This time I used origin but I doubt I have to do that
+each time. Also you can use git init even on existing initialization, it will recognize that it already exists.
+Then I used the cat > filename to create a text file that I am currently editing. I need to do ctrl + D to stop
+editing it
+Ok hopefully I am just appending to the att1 that already exists. So then I check the status and 
+I see that my new file (that I am currently editing with cat >> filename) is untracked.  I can do 
+git add to get it to the staging(?) area. then I can do the git commit -m. Hopefully that is correct..
