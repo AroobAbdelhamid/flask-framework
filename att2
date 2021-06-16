@@ -1,0 +1,7 @@
+The first attempt worked but I need to write my steps after hte initial stuff. Ok so after you made the file, you need to actually clone the remote repo. You need to have the latest version that you can add to. It's basically clone
+and then the http address. After that, you need to move your new file from the directory you are currently in
+to the new local folder with the cloned data. Think mv filename ./the cloned folder name. Remember one dot means
+current directory. You should be going into something, because the cloned folder should be in your current folder. 
+Then go into the cloned folder, which now has your file, then do git checkout -b newbranchname. You will then do git add
+your filename and do git commit -m "message", this will commit it to your branch of hte local repo. Then finally you can do git push origin thebranch nm
+I will try it on this. Hppe this works. If it doesn't, I'll make an att3 file or edit this one....
