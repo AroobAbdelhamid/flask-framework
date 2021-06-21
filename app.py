@@ -1,51 +1,33 @@
 from flask import Flask, render_template, request, redirect
-
+from dotenv import load_dotenv
+import os
+import re #string parsing
+import requests #to download html data
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from bokeh.plotting import figure, output_file, save
+from bokeh.io import output_notebook, push_notebook, show, save
+from bokeh.resources import CDN
+from bokeh.embed import file_html, components
+from bokeh.models import (HoverTool)
 app = Flask(__name__)
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
 app.config['TESTING'] = True
 
-@app.route('/', methods=['POST'])
-def my_form_post():
-    text = request.form['Enter Stock Ticker Info here (i.e. GOOG)']
-    processed_text = text.upper()
-    return processed_text
+@app.route('/', methods = ['POST', 'GET'])
+def main_func():
+    APIdata = get_url()
+    API = clean_data(APIdata)
 
-@app.route('/')
-def home():
+    bokeh_graph = plot_chart(API, "Daily High Plot")
+    script, div = components(bokeh_graph)
+    return render_template("General_attempt.html", the_div=div, the_script=script)
 
-    import re #string parsing
-    import requests #to download html data
-    import pandas as pd
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from bokeh.plotting import figure, output_file, save
-    from bokeh.io import output_notebook, push_notebook, show, save
-    from bokeh.resources import CDN
-    from bokeh.embed import file_html
-    import os
-    from dotenv import load_dotenv
-
-    API_KEY = os.environ[‘MY_API_KEY’]
-
-    if request.method == 'POST':
-        content = requests.get(
-            "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
-            convert_input(request.form['stock_tick']) +
-            "&interval=5min&apikey=" + API_KEY #+"+4PJK6E44KAP57MW0"
-        json_response = json.loads(content.text)
-        print json_response
-        return render_template("General_attempt.html", response=json_response) if json_response != [] else render_template(
-            "General_attempt.html", response="")
-    else:
-        return render_template("restaurant_list.html")
-
-    url_nm = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol="+stock_tick+"&interval=5min&apikey=4PJK6E44KAP57MW0"
-    url = url_nm#'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=4PJK6E44KAP57MW0'
-    r = requests.get(url)
-    APIdata = r.json()
+def clean_data(APIdata):
     metadata = APIdata.pop("Meta Data")
-
+    print (metadata)
     #print(APIdata)
     #API = pd.DataFrame.from_dict(APIdata)
     API = (pd.json_normalize(APIdata['Time Series (5min)'])).T
@@ -62,28 +44,60 @@ def home():
     API = API.reset_index(drop=True);
     API.rename(columns={0 :'value'}, inplace= True)
     API['value'] = pd.to_numeric(API['value'], downcast="float")
+    return API
 
-    bokeh_graph = figure(title = "Daily High", x_axis_type='datetime', plot_height=300, plot_width = 600, )
+def get_url():
+
+    load_dotenv()
+    API_KEY = os.environ['MY_API_KEY']
+
+    if request.method == 'POST':
+        stock = request.form.get("stock_tick")
+        url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
+          stock + "&interval=5min&apikey=" #request.form['stock_tick']
+          + API_KEY )#convert_input(request.form[stock_tick]) +
+            #+"+4PJK6E44KAP57MW0"
+        print("we are at post", url_nm)
+    else :
+         url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=GOOG" +
+          "&interval=5min&apikey=" + API_KEY )
+         print("we are at get", url_nm)
+
+    r = requests.get(url_nm)
+    APIdata = r.json()
+    return APIdata
+
+def plot_chart(API, title, hover_tool=None):
+    hover = create_hover_tool()
+    bokeh_graph = figure(title = title, x_axis_type='datetime', plot_height=600, plot_width = 600)
 
     y=API[API['statetxt']=='high'].value
     x=API[API['statetxt']=='high'].datetime
 
+    tools = []
+    if hover_tool:
+        tools = [hover_tool,]
+
     bokeh_graph.line(x,y)
     bokeh_graph.xaxis.axis_label = "date/time of day"
     bokeh_graph.yaxis.axis_label = "Price ($)"
+    bokeh_graph.toolbar.logo = None
+    return bokeh_graph
 
-    home_path = "/Users/Aroob Abdelhamid/"
-    currpath = os.path.join(home_path, "earth-analytics", "flask_repo_TDI", "flask-framework", "templates","bokeh_plot.html")
-    output_file(currpath, title="Daily High Plot")
-    save(bokeh_graph)
-
-    # html_bokeh = file_html(bokeh_graph, CDN, "Daily High")
-    # home_path = "/Users/Aroob Abdelhamid/"
-    # currpath = os.path.join(home_path, "earth-analytics", "flask_repo_TDI", "flask-framework", "templates","bokeh_plot.html")
-    # with open(currpath, "a") as f:
-    #     f.write(html_bokeh)
-
-    return render_template("General_attempt.html")
+def create_hover_tool():
+    """Generates the HTML for the Bokeh's hover data tool on our graph."""
+    hover_html = """
+      <div>
+        <span class="hover-tooltip">$x</span>
+      </div>
+      <div>
+        <span class="hover-tooltip">@bugs bugs</span>
+      </div>
+      <div>
+        <span class="hover-tooltip">$@costs{0.00}</span>
+      </div>
+    """
+    return HoverTool(tooltips=hover_html)
 
 def index():
   return render_template('index.html')
