@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect
-from python-dotenv import load_dotenv
+#from dotenv import load_dotenv
+from boto.s3.connection import S3Connection #can't use dotenv in heroku....
 import os
 import re #string parsing
 import requests #to download html data
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from bokeh.plotting import figure, output_file, save
 from bokeh.io import output_notebook, push_notebook, show, save
 from bokeh.resources import CDN
@@ -49,9 +49,9 @@ def clean_data(APIdata):
 
 def get_url():
 
-    load_dotenv()
-    API_KEY = os.environ['MY_API_KEY']
-
+#    load_dotenv()
+#    API_KEY = os.environ['MY_API_KEY']
+    API_KEY = S3Connection(os.environ['MY_API_KEY'])
     if request.method == 'POST':
         stock = request.form.get("stock_tick")
         url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
