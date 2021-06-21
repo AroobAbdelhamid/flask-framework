@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect
-from dotenv import load_dotenv
+from python-dotenv import load_dotenv
 import os
 import re #string parsing
 import requests #to download html data
@@ -11,6 +11,7 @@ from bokeh.io import output_notebook, push_notebook, show, save
 from bokeh.resources import CDN
 from bokeh.embed import file_html, components
 from bokeh.models import (HoverTool)
+
 app = Flask(__name__)
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
