@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 #from dotenv import load_dotenv
-from boto.s3.connection import S3Connection #can't use dotenv in heroku....
+import boto3
+from boto3.s3.connection import S3Connection #can't use dotenv in heroku....
 import os
 import re #string parsing
 import requests #to download html data
