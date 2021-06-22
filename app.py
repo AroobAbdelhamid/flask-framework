@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect
 #from dotenv import load_dotenv
-import boto3
-from boto3.s3.connection import S3Connection #can't use dotenv in heroku....
+# import boto3
+# from boto3.s3.connection import S3Connection #can't use dotenv in heroku....
 import os
 import re #string parsing
 import requests #to download html data
@@ -52,7 +52,7 @@ def get_url():
 
 #    load_dotenv()
 #    API_KEY = os.environ['MY_API_KEY']
-    API_KEY = S3Connection(os.environ['MY_API_KEY'])
+    API_KEY = 4PJK6E44KAP57MW0## S3Connection(os.environ['MY_API_KEY'])
     if request.method == 'POST':
         stock = request.form.get("stock_tick")
         url_nm = ("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
